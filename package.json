@@ -2,7 +2,7 @@
   "name": "goit-react-hw-03-image-finder-new",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://Bohatyrenko.github.io/goit-react-hw-02-feedback-new",
+  "homepage": "https://Bohatyrenko.github.io/goit-react-hw-03-image-finder-1",
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
