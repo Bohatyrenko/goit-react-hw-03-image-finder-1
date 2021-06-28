@@ -1,38 +1,67 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import photoApi from './servises/photoApi';
+
+import s from './components/Button/Button.module.css';
 
 import shortid from 'shortid';
 import ImageGallery from './components/ImageGallery/ImageGallery';
 import Searchbar from './components/Searchbar/Searchbar';
 import Button from './components/Button/Button';
 
-const API_KEY = '21301662-4ef0ce252e11badb1c1b3b876';
-const BASE_URL = 'https://pixabay.com/api/';
-
 class App extends Component {
   state = {
     hits: [],
-    searchQuerry: '',
+    searchQuery: '',
     currentPage: 1,
+    isLoading: false,
+    error: null,
   };
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.searchQuery !== this.state.searchQuery) {
+      this.fetchHits();
+    }
+  }
+
   onChangeQuery = query => {
-    const { currentPage } = this.state;
-    axios
-      .get(
-        `${BASE_URL}?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&page=${currentPage}&per_page=12`,
-      )
-      .then(response => {
-        this.setState({ hits: response.data.hits });
-      });
+    this.setState({
+      searchQuery: query,
+      currentPage: 1,
+      hits: [],
+      error: null,
+    });
+  };
+
+  fetchHits = () => {
+    this.setState({ isLoading: true });
+    const { currentPage, searchQuery } = this.state;
+
+    const options = {
+      currentPage,
+      searchQuery,
+    };
+
+    photoApi
+      .fetchHits(options)
+      .then(hits => {
+        this.setState(prevState => ({
+          hits: [...prevState.hits, ...hits],
+          currentPage: prevState.currentPage + 1,
+        }));
+      })
+      .catch(error => this.setState({ error }))
+      .finally(() => this.setState({ isLoading: false }));
   };
 
   render() {
-    const { hits } = this.state;
+    const { hits, isLoading } = this.state;
+    const shouldRenderLoadMoreButton = hits.length > 0 && !isLoading;
     return (
       <div>
         <h1>Ниже должны быть фотографии</h1>
+        {/* {error && <h2>Houston, we have a problem...</h2>} */}
         <Searchbar onSubmit={this.onChangeQuery} />
+        {isLoading && <h2>Loading Photo...</h2>}
         <ul>
           {hits.map(({ id, previewURL, tags }) => (
             <li key={id}>
@@ -44,7 +73,12 @@ class App extends Component {
             </li>
           ))}
         </ul>
-        <Button />
+        {shouldRenderLoadMoreButton && (
+          <button type="button" onClick={this.fetchHits} className={s.Button}>
+            Load more...
+          </button>
+        )}
+        {/* <Button onClick={this.fetchHits} /> */}
         {/* <Searchbar />
         <ImageGallery /> */}
       </div>

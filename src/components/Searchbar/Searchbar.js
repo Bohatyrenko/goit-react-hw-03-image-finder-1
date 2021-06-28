@@ -8,16 +8,16 @@ class Searchbar extends Component {
   };
 
   handleChange = e => {
-    this.setState({ query: e.currentTarget.value });
+    this.setState({ searchQuery: e.currentTarget.value });
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log(this.state);
-    this.props.onSubmit(this.state.query);
+    this.props.onSubmit(this.state.searchQuery);
 
-    this.setState({ query: '' });
+    this.setState({ searchQuery: '' });
   };
+
   render() {
     return (
       <header className={s.Searchbar}>
@@ -27,7 +27,7 @@ class Searchbar extends Component {
           </button>
 
           <input
-            value={this.state.query}
+            value={this.state.searchQuery}
             onChange={this.handleChange}
             className={s.SearchFormInput}
             type="text"

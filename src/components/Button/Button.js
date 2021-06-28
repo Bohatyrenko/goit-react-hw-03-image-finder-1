@@ -2,9 +2,13 @@ import React, { Component } from 'react';
 import s from '../Button/Button.module.css';
 
 class Button extends Component {
+  handleMoreLode = e => {
+    console.log(this.props.fetchHits);
+  };
+
   render() {
     return (
-      <button type="button" className={s.Button}>
+      <button type="button" onClick={this.handleMoreLode} className={s.Button}>
         Load more...
       </button>
     );
