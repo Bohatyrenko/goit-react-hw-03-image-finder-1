@@ -8,7 +8,10 @@ const fetchHits = ({ searchQuery = '', currentPage = 1 }) => {
     .get(
       `${BASE_URL}?key=${API_KEY}&q=${searchQuery}&image_type=photo&orientation=horizontal&page=${currentPage}&per_page=12`,
     )
-    .then(response => response.data.hits);
+    .then(response => {
+      console.log(response.data.hits);
+      return response.data.hits;
+    });
 };
 
 export default { fetchHits };
