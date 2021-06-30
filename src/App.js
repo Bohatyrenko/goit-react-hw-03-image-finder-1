@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import photoApi from './servises/photoApi';
 
-import s from './components/Button/Button.module.css';
-
+import './App.css';
+import Loader from './components/Loader/Loader';
 import shortid from 'shortid';
 import ImageGallery from './components/ImageGallery/ImageGallery';
 import Searchbar from './components/Searchbar/Searchbar';
 import Button from './components/Button/Button';
+import Modal from './components/Modal/Modal';
 
 class App extends Component {
   state = {
@@ -15,6 +16,9 @@ class App extends Component {
     currentPage: 1,
     isLoading: false,
     error: null,
+    showModal: false,
+    largeImageURL: '',
+    modalAlt: '',
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -30,6 +34,35 @@ class App extends Component {
       hits: [],
       error: null,
     });
+  };
+
+  onOpenModal = e => {
+    this.setState({
+      largeImageURL: e.target.dataset.source,
+      modalAlt: e.target.attributes.alt.textContent,
+    });
+    this.toggleModal();
+  };
+
+  onCloseModal = e => {
+    if (e.target.nodeName !== 'IMG') {
+      this.toggleModal();
+      this.setState({
+        largeImageURL: '',
+        modalAlt: '',
+      });
+    }
+  };
+
+  // handleImageClick = e => {
+
+  //   this.toggleModal();
+  //   this.setState({ largeImageURL: image });
+  // };
+
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({ showModal: !showModal }));
+    console.log(this.state.showModal);
   };
 
   fetchHits = () => {
@@ -50,37 +83,31 @@ class App extends Component {
         }));
       })
       .catch(error => this.setState({ error }))
-      .finally(() => this.setState({ isLoading: false }));
+      .finally(() => {
+        this.setState({ isLoading: false });
+        window.scrollTo({
+          top: document.querySelector('#imageGallery').scrollHeight,
+          behavior: 'smooth',
+        });
+      });
   };
 
   render() {
     const { hits, isLoading } = this.state;
     const shouldRenderLoadMoreButton = hits.length > 0 && !isLoading;
     return (
-      <div>
-        <h1>Ниже должны быть фотографии</h1>
-        {/* {error && <h2>Houston, we have a problem...</h2>} */}
+      <div className="allCenter">
         <Searchbar onSubmit={this.onChangeQuery} />
-        {isLoading && <h2>Loading Photo...</h2>}
-        <ul>
-          {hits.map(({ id, previewURL, tags }) => (
-            <li key={id}>
-              <img
-                src={previewURL}
-                alt={tags}
-                className="ImageGalleryItem-image"
-              />
-            </li>
-          ))}
-        </ul>
-        {shouldRenderLoadMoreButton && (
-          <button type="button" onClick={this.fetchHits} className={s.Button}>
-            Load more...
-          </button>
+        <ImageGallery hits={hits} onOpenModal={this.onOpenModal} />
+        {isLoading && <Loader />}
+        {shouldRenderLoadMoreButton && <Button onClick={this.fetchHits} />}
+        {this.state.showModal && (
+          <Modal
+            image={this.state.largeImageURL}
+            alt={this.state.modalAlt}
+            onClose={this.onCloseModal}
+          />
         )}
-        {/* <Button onClick={this.fetchHits} /> */}
-        {/* <Searchbar />
-        <ImageGallery /> */}
       </div>
     );
   }

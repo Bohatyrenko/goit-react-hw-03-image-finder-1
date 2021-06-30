@@ -1,19 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import s from '../Button/Button.module.css';
 
-class Button extends Component {
-  handleMoreLode = e => {
-    console.log(this.props.fetchHits);
-  };
-
-  render() {
-    return (
-      <button type="button" onClick={this.handleMoreLode} className={s.Button}>
-        Load more...
-      </button>
-    );
-  }
-}
+const Button = ({ onClick }) => {
+  return (
+    <button type="button" onClick={onClick} className={s.Button}>
+      Load more...
+    </button>
+  );
+};
 
 export default Button;
 
