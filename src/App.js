@@ -85,10 +85,12 @@ class App extends Component {
       .catch(error => this.setState({ error }))
       .finally(() => {
         this.setState({ isLoading: false });
-        window.scrollTo({
-          top: document.querySelector('#imageGallery').scrollHeight,
-          behavior: 'smooth',
-        });
+        if (this.state.hits.length > 12) {
+          return window.scrollTo({
+            top: document.querySelector('#imageGallery').scrollHeight,
+            behavior: 'smooth',
+          });
+        }
       });
   };
 
